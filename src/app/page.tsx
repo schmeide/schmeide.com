@@ -14,9 +14,15 @@ import { JsonLd } from "@/components/ui/json-ld";
 import { site } from "@/content";
 import { isConfirmed } from "@/lib/placeholder";
 import { faqPageJsonLd } from "@/lib/structured-data";
+import { socialMetadata } from "./shared-metadata";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  ...socialMetadata({
+    title: site.meta.title,
+    description: site.meta.description,
+    path: "/",
+  }),
 };
 
 const confirmedAnswers = site.faq.items.flatMap(({ question, answer }) =>

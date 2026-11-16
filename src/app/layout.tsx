@@ -6,38 +6,23 @@ import { JsonLd } from "@/components/ui/json-ld";
 import { PRODUCT_NAME, SITE_URL, site } from "@/content";
 import { cx } from "@/lib/cx";
 import { organizationJsonLd } from "@/lib/structured-data";
-import {
-  OG_IMAGE_PATH,
-  OG_IMAGE_SIZE,
-  THEME_COLORS,
-  TOUCH_ICON_PATH,
-} from "@/lib/theme";
+import { THEME_COLORS, TOUCH_ICON_PATH } from "@/lib/theme";
 import { displayFont, sansFont } from "./fonts";
+import { socialMetadata, titleTemplate } from "./shared-metadata";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: site.meta.title,
-    template: `%s | ${PRODUCT_NAME}`,
+    template: titleTemplate,
   },
   description: site.meta.description,
   applicationName: PRODUCT_NAME,
-  openGraph: {
-    type: "website",
-    locale: "en",
-    url: "/",
-    siteName: PRODUCT_NAME,
-    title: site.meta.title,
+  ...socialMetadata({
+    title: { default: site.meta.title, template: titleTemplate },
     description: site.meta.description,
-    images: [{ url: OG_IMAGE_PATH, ...OG_IMAGE_SIZE, alt: site.meta.tagline }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: site.meta.title,
-    description: site.meta.description,
-    images: [OG_IMAGE_PATH],
-  },
+  }),
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     apple: TOUCH_ICON_PATH,
