@@ -1,0 +1,61 @@
+# 0008: Where the waitlist form sends sign-ups
+
+**Status:** proposed. The owner decides. Part of #20.
+
+## Context
+
+The site is a static export on GitHub Pages (architecture topic 6). The waitlist form posts from the browser through `submitWaitlist` (topic 7). `endpointAdapter` in `src/lib/waitlist/submit.ts` sends `POST` to `NEXT_PUBLIC_WAITLIST_ENDPOINT` with `Content-Type: application/json`, `Accept: application/json` and the body `{ name, email, business }`. Any 2xx response is `saved`, any other status is `rejected`, and a network error or a 10 second timeout is `network`. With no endpoint set, nothing is sent.
+
+Constraints that follow from this:
+
+- The endpoint URL is inlined at build and is public. No secret can go with the request.
+- The backend must answer cross-origin requests from `https://schmeide.com`, including the `OPTIONS` preflight that a JSON `Content-Type` triggers.
+- The response must be readable. A `no-cors` request gives an opaque response, so the form could not tell success from failure, and #20 requires the failure message when the backend is down.
+- The honeypot (`website` field) is checked in the browser and never sent. A bot that posts straight to the endpoint skips it, so the backend needs its own spam handling.
+
+Nothing below was checked against a vendor's live site while writing this record. Every price, limit, region and feature is marked **(verify)** and must be confirmed by the owner before a choice is made.
+
+## Options
+
+|                                          | Formspree                                                                                                                                                                            | Buttondown                                                                                                                                                                                                                                                                                 | Cloudflare Worker                                                                                                                                                                                           | Supabase table                                                                                                                                                                                                                                                                 |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Current JSON body                        | Accepted as is, as far as known: it takes arbitrary JSON fields and answers JSON when `Accept: application/json` is sent **(verify)**. No adapter change expected.                   | No. The public embed endpoint is built for HTML form posts with an `email` field **(verify)**. The API that takes JSON needs an API key, which cannot ship to the browser. Adapter change, plus a decision on where `name` and `business` go (metadata fields, if supported **(verify)**). | Yes. We write it to accept this body.                                                                                                                                                                       | Mostly. PostgREST takes the JSON body if the table columns are named `name`, `email`, `business`, but it needs `apikey` and `Authorization` headers with the public anon key **(verify)**. Adapter change, and a second `NEXT_PUBLIC_*` variable in `env.ts` and `deploy.yml`. |
+| CORS from `https://schmeide.com`         | Supported for AJAX posts **(verify)**. Restricting the form to one domain may be a paid feature **(verify)**.                                                                        | Not known to allow a readable cross-origin `fetch` on the embed endpoint **(verify)**. If it does not, the option fails the #20 acceptance criteria.                                                                                                                                       | We set the headers, so the allowed origin can be exactly `https://schmeide.com`.                                                                                                                            | Allowed by default **(verify)**.                                                                                                                                                                                                                                               |
+| Cost                                     | Has a free tier with a monthly submission cap **(verify the cap and what happens past it)**. Paid plans add features **(verify)**.                                                   | Has a free tier with a subscriber cap **(verify)**.                                                                                                                                                                                                                                        | Workers has a free plan with request limits; the store (D1 or KV) has its own limits **(verify both)**. Our time to build and maintain it is the main cost.                                                 | Free tier exists; inactive free projects may be paused **(verify)**.                                                                                                                                                                                                           |
+| Data location and privacy                | Data is held by Formspree, a third party, likely in the United States **(verify region and data processing terms)**. Submissions are also emailed to the owner by default.           | Data is held by Buttondown, likely in the United States **(verify)**. A newsletter tool may send a confirmation email and treat the person as a subscriber, which is more than a waitlist promises.                                                                                        | Data is held in the owner's Cloudflare account. Cloudflare is still a processor; D1 location hints or jurisdiction settings may allow an EU location **(verify)**. Logs may hold IP addresses **(verify)**. | Data is in the owner's Supabase project, in a region the owner picks at creation **(verify available regions)**. Row level security must allow insert only, or the public key can read every sign-up.                                                                          |
+| Spam alongside the honeypot              | Built-in filtering, an optional `_gotcha` honeypot field and captcha options **(verify which plans)**. The form could forward our honeypot as `_gotcha` with a small adapter change. | Unknown for the embed endpoint **(verify)**. Double opt-in limits the harm of fake addresses.                                                                                                                                                                                              | Whatever we build: server-side honeypot, rate limit per IP, or Cloudflare Turnstile. Turnstile needs a widget script in the form, which is a new third-party script and a privacy disclosure.               | None built in that we know of **(verify)**. Rate limits or a captcha would need extra work.                                                                                                                                                                                    |
+| Fits "nothing else should change" in #20 | Yes.                                                                                                                                                                                 | No.                                                                                                                                                                                                                                                                                        | Yes in this repo, but the Worker code needs a home (a new folder or a separate repository) and its own deploy.                                                                                              | No.                                                                                                                                                                                                                                                                            |
+
+## What the privacy page must disclose, whichever is chosen
+
+This record does not write that text. The owner, or whoever writes it, needs these facts:
+
+- What is collected: name, email address, a one-line business description, and whatever the backend records on its own (IP address, user agent, timestamps) **(verify per backend)**.
+- Why it is collected and the legal basis that applies in the owner's jurisdiction.
+- Who processes it: the backend vendor by name, and any sub-processors it lists. If submissions are emailed, the email provider too.
+- Where it is stored, and whether it leaves the person's region.
+- How long it is kept, and what happens to it after launch.
+- How a person asks to see, correct or delete their entry, and who to contact.
+- Any captcha or bot-check script and what it collects, if one is added.
+
+## Recommendation
+
+Formspree, if the owner confirms the **(verify)** items above: that it accepts this JSON body, answers a readable CORS response for `https://schmeide.com`, has a submission cap that fits the expected volume, and has data processing terms the owner accepts. It is the only option that needs no code change, no new runtime dependency and no infrastructure to run, which matches a static marketing site.
+
+If the owner wants the sign-ups in their own account, or needs to control the data location, choose a Cloudflare Worker instead. It keeps this repo unchanged but adds a small service to build and maintain.
+
+Buttondown is not recommended for the form as it stands: the body, the missing readable response and the newsletter semantics all work against #20.
+
+## Consequences and follow-up
+
+If Formspree is accepted:
+
+1. Owner: confirm the **(verify)** items for Formspree and choose a plan.
+2. Owner: create the form and turn on the spam settings it offers.
+3. Owner: supply the privacy and terms text, covering the list above. Agents do not write it.
+4. Agent: replace the placeholder bodies of `/privacy` and `/terms` in `src/content/site.ts`, remove `noindex` from both pages and add them to `src/app/sitemap.ts` (#20 scope).
+5. Owner: only after step 4 is live, set the repository variable `NEXT_PUBLIC_WAITLIST_ENDPOINT` to the form URL and redeploy.
+6. Owner or agent: send one real sign-up from the deployed site and confirm it arrives. Confirm that a broken endpoint shows the failure message.
+7. Change this record's status to accepted, noting the plan and the region confirmed.
+
+If a Worker is accepted instead, add before step 5: decide where the Worker code lives, build it with a server-side honeypot or rate limit and an exact CORS origin, and record that in a new decision. If Supabase or Buttondown is accepted, the adapter change in `src/lib/waitlist/submit.ts` comes with a unit test in `submit.test.ts`, and architecture topic 7 is updated in the same pull request.
