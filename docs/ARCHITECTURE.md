@@ -21,8 +21,8 @@ Contents: [1 Layout](#1-directory-layout) · [2 Content](#2-content-module) · [
 src/
   app/                  routes, layouts, metadata files, globals.css, fonts.ts
   components/
-    ui/                 visual primitives: Button, Card, Highlight, StepBadge, ChatBubble, RoundedImage, CopyText
-    layout/             page structure: Section, Container, Stack, Heading, SiteHeader, SiteFooter, SkipLink
+    ui/                 visual primitives: Button styles, ButtonLink, TextLink, Card, Highlight, StepBadge, ChatBubble, RoundedImage, CopyText, JsonLd, icons
+    layout/             page structure: Section, SectionIntro, Container, Stack, Heading, SiteHeader, SiteFooter, SkipLink
     sections/           one file per landing page section: Hero, Problem, HowItWorks, ...
     islands/            the only place "use client" is allowed
   content/              all copy and image slots, one entry point (index.ts)
@@ -30,6 +30,7 @@ src/
   invariants.test.ts    tests that enforce the rules in this doc
 assets/images/          source photos, before processing (#17)
 public/                 files served as they are; public/images holds generated derivatives
+e2e/                    Playwright tests, run against the built out/
 design/                 visual references, never imported by the app
 scripts/                build-time TypeScript scripts, run with node
 docs/                   this doc and decisions/
@@ -81,7 +82,7 @@ answer: placeholder("support details", "We monitor it, and we can roll back a ba
 
 ## 3. Component conventions
 
-- **Server first.** Every component is a server component unless it needs state, effects or browser events. A client component is allowed only when the feature cannot work with HTML and CSS alone (`<details>`, `:target`, anchors and CSS scroll effects come first). It lives in `components/islands/`, is as small as possible, and receives server-rendered content as props or `children`. See [decision 0003](decisions/0003-client-islands.md). Known islands: the mobile menu (#7), the diagram interaction if it needs one (#9), `WaitlistForm` (#14).
+- **Server first.** Every component is a server component unless it needs state, effects or browser events. A client component is allowed only when the feature cannot work with HTML and CSS alone (`<details>`, `:target`, anchors and CSS scroll effects come first). It lives in `components/islands/`, is as small as possible, and receives server-rendered content as props or `children`. See [decision 0003](decisions/0003-client-islands.md). The only island is `WaitlistForm` (#14). The mobile menu and the FAQ are native `<details>`, and the diagram animates with CSS. See [decision 0006](decisions/0006-helpers-and-choices-from-the-build.md).
 - **Sections receive content as props.** A section takes one `content` prop typed by its content type, plus `children` when a page slots an island into it. It never imports `@/content` values. See [decision 0001](decisions/0001-content-flows-through-props.md).
 
   ```tsx
@@ -167,6 +168,7 @@ What works, checked against Next.js 16.4 in this repo:
 
 - `src/app/sitemap.ts` and `src/app/robots.ts` with `export const dynamic = "force-static"` are written to `out/sitemap.xml` and `out/robots.txt`.
 - `src/app/og.png/route.tsx` returning an `ImageResponse` from `next/og`, with `force-static`, is written to `out/og.png`.
+- `src/app/apple-touch-icon.png/route.tsx` and `src/app/manifest.ts` work the same way. The favicon is the static file `public/icon.svg`.
 - `not-found.tsx` becomes `out/404.html`, which GitHub Pages serves for unknown paths.
 - With `trailingSlash: true`, `/privacy` is written as `out/privacy/index.html`. Internal page links end with a slash.
 
@@ -216,7 +218,7 @@ Types are in `src/lib/images/types.ts`. #17 implements them. See [decision 0005]
 - Unit tests sit next to the code as `*.test.ts`. A new pure function in `src/lib` comes with a test.
 - There are no component render tests and no jsdom. Components are thin and are tested in a real browser against the real export.
 - Content tests (#6) assert rules on the data, such as "every FAQ item has a question" and "no placeholder has an empty note".
-- CI gates for every pull request (#3), in this order: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. #16 adds the Playwright and Lighthouse jobs after the build.
+- CI gates for every pull request, in this order: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. A second job then runs `pnpm test:e2e` (Playwright with axe, against a build whose waitlist endpoint is a mocked address) and `pnpm lighthouse` (budgets in `lighthouserc.json`).
 
 ## 10. Functional style in practice
 
@@ -227,12 +229,17 @@ Types are in `src/lib/images/types.ts`. #17 implements them. See [decision 0005]
 - **Types, not interfaces.** `type` aliases everywhere, with type-only imports (lint enforces both).
 - **The allowed helpers.** This is the full list; add to it only with a decision record:
 
-  | Helper                                                       | File                     | Use                                             |
-  | ------------------------------------------------------------ | ------------------------ | ----------------------------------------------- |
-  | `cx(...classes)`                                             | `src/lib/cx.ts`          | Join class names, dropping falsy values         |
-  | `ok`, `err`, `Result`                                        | `src/lib/result.ts`      | Return expected failures as values              |
-  | `placeholder`, `isPlaceholder`, `isConfirmed`, `resolveCopy` | `src/lib/placeholder.ts` | Mark and resolve unconfirmed copy               |
-  | `PLACEHOLDER_MODE` and other environment values              | `src/lib/env.ts`         | The single place build-time environment is read |
+  | Helper                                                       | File                         | Use                                             |
+  | ------------------------------------------------------------ | ---------------------------- | ----------------------------------------------- |
+  | `cx(...classes)`                                             | `src/lib/cx.ts`              | Join class names, dropping falsy values         |
+  | `ok`, `err`, `Result`                                        | `src/lib/result.ts`          | Return expected failures as values              |
+  | `placeholder`, `isPlaceholder`, `isConfirmed`, `resolveCopy` | `src/lib/placeholder.ts`     | Mark and resolve unconfirmed copy               |
+  | `PLACEHOLDER_MODE` and other environment values              | `src/lib/env.ts`             | The single place build-time environment is read |
+  | `resolve`, `isShown`                                         | `src/lib/copy.ts`            | Resolve copy with the build's placeholder mode  |
+  | `isAnchorHref`, `toHomeHref`                                 | `src/lib/href.ts`            | Tell an in-page anchor from a route             |
+  | `imageFilePath`, `imageSrcSet`, `heightFor`                  | `src/lib/images/path.ts`     | Paths and sizes of image derivatives            |
+  | `faqPageJsonLd`, `organizationJsonLd`, `serializeJsonLd`     | `src/lib/structured-data.ts` | Build JSON-LD objects                           |
+  | `THEME_COLORS` and image sizes                               | `src/lib/theme.ts`           | Brand colors for generated images and manifest  |
 
 - **No utility libraries.** No lodash, clsx, zod or date library. The runtime dependencies are `next`, `react` and `react-dom`.
 - **Small files.** One component or one topic per file. When a function passes about 30 lines, split it into named steps.

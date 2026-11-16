@@ -39,6 +39,7 @@ export const metadata: Metadata = {
     images: [OG_IMAGE_PATH],
   },
   icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     apple: TOUCH_ICON_PATH,
   },
 };

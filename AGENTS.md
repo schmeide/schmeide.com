@@ -24,6 +24,9 @@ Read these before writing code, in this order:
 | `pnpm test`         | Vitest: pure functions and repo invariants.                  |
 | `pnpm format`       | Prettier, including Tailwind class order.                    |
 | `pnpm format:check` | Prettier in check mode. CI runs this.                        |
+| `pnpm test:e2e`     | Playwright and axe against a fresh build of `out/`.          |
+| `pnpm lighthouse`   | Lighthouse budgets against `out/`. Run `pnpm build` first.   |
+| `pnpm images`       | Rebuild `public/images` from `assets/images`. Commit both.   |
 
 Before you call a ticket done, all of these pass: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`.
 
@@ -64,13 +67,24 @@ Lint or a test enforces the ones marked (enforced). Do not disable a rule to get
 ## Working in this repo
 
 - pnpm is pinned in `packageManager`. If `pnpm` is not on your PATH, run it as `npx pnpm@<that version>`.
-- Tests sit next to the code as `*.test.ts`. Unit tests cover pure functions only. Components are tested in the browser by the Playwright suite from #16.
+- Tests sit next to the code as `*.test.ts`. Unit tests cover pure functions only. Components are tested in the browser by the Playwright suite in `e2e/`. The first run needs `pnpm exec playwright install chromium`.
 - `design/shopfront-draft.html` is the approved mockup. Use it for structure, spacing and tone. Do not copy its inline styles; use tokens and components.
 - If your work changes a rule or a boundary in `docs/ARCHITECTURE.md`, update the doc in the same pull request and add a decision record.
 - If your work changes the scope of another ticket, say so in the pull request description and comment on that ticket.
 - When writing a ticket, state its difficulty (hard, standard or mechanical) with a one-line reason. Do not name a model.
 
 <!-- BEGIN:nextjs-agent-rules -->
+
+## Design skills
+
+The skills in `.claude/skills/` are vendored from jakubkrehel/skills. See `.claude/skills/README.md` for the source commit and license.
+
+| Work                             | Skills                                                                        |
+| -------------------------------- | ----------------------------------------------------------------------------- |
+| Mockups and visual design        | `variant`, `better-layout`, `better-typography`, `better-colors`, `better-ui` |
+| Copy                             | `better-writing`                                                              |
+| Before opening a UI pull request | `interface-review`                                                            |
+| The accessibility pass           | `better-accessibility`, `better-interface`                                    |
 
 ## This is NOT the Next.js you know
 

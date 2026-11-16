@@ -74,7 +74,7 @@ export const PipelineStep = ({ step, number, labels }: PipelineStepProps) => (
         </dl>
       </div>
     </Card>
-    <div className="ml-10 flex min-h-8 flex-col gap-2 border-l-2 border-ink py-5 pl-6 sm:ml-13">
+    <div className="ml-11 flex min-h-8 flex-col gap-2 border-l-2 border-ink py-5 pl-6 sm:ml-13">
       {step.checks.length === 0 ? null : (
         <>
           <p className="text-label font-bold text-ink-muted uppercase">

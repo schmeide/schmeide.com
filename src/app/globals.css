@@ -126,11 +126,9 @@
 
   @keyframes reveal {
     from {
-      opacity: 0.2;
-      translate: 0 1.5rem;
+      translate: 0 2rem;
     }
     to {
-      opacity: 1;
       translate: 0 0;
     }
   }

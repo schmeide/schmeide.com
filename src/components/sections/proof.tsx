@@ -53,7 +53,7 @@ export const Proof = ({ content }: ProofProps) => {
           {stories.length === 0 ? null : (
             <ul role="list" className="flex flex-col gap-5 lg:col-span-5">
               {stories.map((story, index) => (
-                <li key={index} className="flex-1">
+                <li key={index}>
                   <Card tone="ink" radius="card" padding="regular">
                     <p className="text-on-ink-muted">
                       <CopyText copy={story} />

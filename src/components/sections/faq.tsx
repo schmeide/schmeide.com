@@ -1,5 +1,6 @@
 import { Section } from "@/components/layout/section";
 import { SectionIntro } from "@/components/layout/section-intro";
+import { ChevronIcon } from "@/components/ui/chevron-icon";
 import { CopyText } from "@/components/ui/copy-text";
 import type { FaqContent } from "@/content";
 import { isShown } from "@/lib/copy";
@@ -28,10 +29,16 @@ export const Faq = ({ content }: FaqProps) => (
           .map((item) => (
             <details
               key={item.question}
-              className="rounded-disclosure bg-mint px-6 py-3"
+              className="group rounded-disclosure bg-mint px-6 py-3"
             >
-              <summary className="flex min-h-11 items-center text-lead font-bold">
+              <summary
+                data-marker="none"
+                className="flex min-h-11 list-none items-center justify-between gap-4 text-lead font-bold"
+              >
                 {item.question}
+                <span className="group-open:rotate-180 motion-safe:transition-transform motion-safe:duration-150">
+                  <ChevronIcon />
+                </span>
               </summary>
               <p className="max-w-prose pt-1 pb-3 text-ink-muted">
                 <CopyText copy={item.answer} />
