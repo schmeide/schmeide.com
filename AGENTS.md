@@ -71,6 +71,7 @@ Lint or a test enforces the ones marked (enforced). Do not disable a rule to get
 - `design/shopfront-draft.html` is the approved mockup. Use it for structure, spacing and tone. Do not copy its inline styles; use tokens and components.
 - If your work changes a rule or a boundary in `docs/ARCHITECTURE.md`, update the doc in the same pull request and add a decision record.
 - If your work changes the scope of another ticket, say so in the pull request description and comment on that ticket.
+- Pull request titles are conventional commits in lowercase imperative mood: `type(scope): subject`, with the issue number as the scope where there is one, as in `feat(17): add the image build script`. `type` is one of `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore` or `revert`. The title becomes the commit subject when the PR is squash-merged, and the PR title workflow fails any other title.
 - When writing a ticket, state its difficulty (hard, standard or mechanical) with a one-line reason. Do not name a model.
 
 <!-- BEGIN:nextjs-agent-rules -->
