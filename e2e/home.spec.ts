@@ -14,6 +14,28 @@ test("has no serious accessibility violations", async ({ page }) => {
   ).toEqual([]);
 });
 
+for (const [label, path] of [
+  ["the privacy page", "/privacy/"],
+  ["the terms page", "/terms/"],
+  ["the 404 page", "/no-such-page/"],
+] as const) {
+  for (const width of [1280, 320]) {
+    test(`has no serious accessibility violations on ${label} at ${width}px`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto(path);
+      const results = await new AxeBuilder({ page }).analyze();
+      expect(
+        results.violations.filter((violation) =>
+          blocking.includes(violation.impact ?? ""),
+        ),
+      ).toEqual([]);
+    });
+  }
+}
+
 test("has one h1 and an h2 for every section", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("h1")).toHaveCount(1);
