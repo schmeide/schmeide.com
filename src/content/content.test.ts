@@ -1,7 +1,7 @@
-import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
-import { imageSlots, site } from "@/content";
+import { PLACEHOLDER_LABEL, imageSlots, site } from "@/content";
 import { IMAGE_FORMATS, IMAGE_WIDTHS, imageFilePath } from "@/lib/images/path";
 import { isPlaceholder } from "@/lib/placeholder";
 import type { Copy } from "@/lib/placeholder";
@@ -32,6 +32,14 @@ describe("site content", () => {
   it("gives every placeholder a note", () => {
     expect(
       allCopy.filter(isPlaceholder).filter((copy) => copy.note.trim() === ""),
+    ).toEqual([]);
+  });
+
+  it("labels every placeholder note", () => {
+    expect(
+      allCopy
+        .filter(isPlaceholder)
+        .filter((copy) => !copy.note.startsWith(`${PLACEHOLDER_LABEL}: `)),
     ).toEqual([]);
   });
 
@@ -90,5 +98,37 @@ describe("image slots", () => {
         (slot) => slot.source.credit === "" || slot.source.license === "",
       ),
     ).toEqual([]);
+  });
+});
+
+const listFiles = (dir: string): readonly string[] =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+    entry.isDirectory()
+      ? listFiles(join(dir, entry.name))
+      : [join(dir, entry.name)],
+  );
+
+const proseConstant =
+  /^\s*(?:export\s+)?const\s+\w+\s*(?::[^=]+)?=\s*(["'`])[A-Z][a-z]+\b[^"'`]*\1/m;
+
+describe("copy outside src/content", () => {
+  it("is not kept in string constants in src/lib or src/components", () => {
+    const src = join(process.cwd(), "src");
+    const offenders = ["lib", "components"]
+      .flatMap((dir) => listFiles(join(src, dir)))
+      .filter((path) => /\.tsx?$/.test(path) && !/\.test\.tsx?$/.test(path))
+      .filter((path) => proseConstant.test(readFileSync(path, "utf8")))
+      .map((path) => relative(src, path));
+    expect(offenders).toEqual([]);
+  });
+
+  it("flags a prose constant and ignores ids and paths", () => {
+    expect(proseConstant.test('export const LABEL = "Placeholder";')).toBe(
+      true,
+    );
+    expect(proseConstant.test('const HEADING_ID = "faq-heading";')).toBe(false);
+    expect(proseConstant.test('export const OG_IMAGE_PATH = "/og.png";')).toBe(
+      false,
+    );
   });
 });
