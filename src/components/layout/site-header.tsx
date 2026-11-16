@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DismissibleMenu } from "@/components/islands/dismissible-menu";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { LinkContent, NavContent } from "@/content";
 import { toHomeHref } from "@/lib/href";
@@ -53,7 +54,7 @@ export const SiteHeader = ({ name, nav }: SiteHeaderProps) => (
           </ul>
         </nav>
         <nav aria-label={nav.label} className="md:hidden">
-          <details>
+          <DismissibleMenu>
             <summary
               data-marker="none"
               className="inline-flex min-h-11 list-none items-center rounded-button border-2 border-ink px-5 font-semibold"
@@ -75,7 +76,7 @@ export const SiteHeader = ({ name, nav }: SiteHeaderProps) => (
                 </ButtonLink>
               </li>
             </ul>
-          </details>
+          </DismissibleMenu>
         </nav>
       </div>
     </Container>

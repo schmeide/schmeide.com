@@ -87,6 +87,35 @@ test("opens the menu on a small screen", async ({ page }) => {
   await expect(menu.locator('a[href="/#how"]')).toBeVisible();
 });
 
+test("closes the menu on a link, on Escape and on a click outside", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.goto("/");
+  const menu = page.locator("header details");
+  const button = menu.locator("summary");
+  const link = menu.locator('a[href="/#how"]');
+
+  await button.click();
+  await expect(link).toBeVisible();
+  await link.click();
+  await expect(page).toHaveURL(/#how$/);
+  await expect(menu).not.toHaveAttribute("open", "");
+  await expect(link).toBeHidden();
+
+  await button.click();
+  await expect(menu).toHaveAttribute("open", "");
+  await link.focus();
+  await page.keyboard.press("Escape");
+  await expect(menu).not.toHaveAttribute("open", "");
+  await expect(button).toBeFocused();
+
+  await button.click();
+  await expect(menu).toHaveAttribute("open", "");
+  await page.locator("main").click({ position: { x: 10, y: 10 } });
+  await expect(menu).not.toHaveAttribute("open", "");
+});
+
 test("shows no placeholder labels in production", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("mark")).toHaveCount(0);
