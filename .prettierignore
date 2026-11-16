@@ -6,3 +6,7 @@ next-env.d.ts
 design/shopfront-draft.html
 public/images
 .saddle
+.claude/skills
+test-results
+playwright-report
+.lighthouseci
