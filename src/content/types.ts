@@ -53,6 +53,8 @@ export type HighlightedHeading = {
 
 export type ConversationContent = {
   readonly label: string;
+  readonly ownerSpeaker: string;
+  readonly ourSpeaker: string;
   readonly ownerMessage: string;
   readonly questions: readonly string[];
   readonly caption: string;
@@ -99,8 +101,15 @@ export type HowItWorksContent = SectionIntro & {
   readonly steps: readonly PipelineStep[];
 };
 
+export type DashboardPreviewContent = {
+  readonly usageLabel: string;
+  readonly costLabel: string;
+  readonly caption: string;
+};
+
 export type WhatYouGetContent = SectionIntro & {
   readonly items: readonly TitledItem[];
+  readonly preview: DashboardPreviewContent;
 };
 
 export type WhyDifferentContent = SectionIntro & {
@@ -109,6 +118,7 @@ export type WhyDifferentContent = SectionIntro & {
 
 export type ProofContent = SectionIntro & {
   readonly quark: TitledItem;
+  readonly details: readonly Copy[];
   readonly stories: readonly Copy[];
 };
 
@@ -124,6 +134,7 @@ export type TeamContent = SectionIntro & {
 };
 
 export type EarlyAccessContent = SectionIntro & {
+  readonly explainer: Copy;
   readonly pricing: Copy;
 };
 
@@ -141,13 +152,19 @@ export type FinalCtaContent = SectionIntro & {
 };
 
 export type FooterContent = {
+  readonly name: string;
+  readonly domain: string;
+  readonly copyright: string;
   readonly contact: Copy;
+  readonly legalLabel: string;
   readonly legalLinks: readonly LinkContent[];
 };
 
 export type LegalPageContent = {
   readonly title: string;
+  readonly description: string;
   readonly body: Copy;
+  readonly homeLink: LinkContent;
 };
 
 export type NotFoundContent = {
@@ -164,6 +181,7 @@ export type WaitlistFieldContent = {
 export type WaitlistFormContent = {
   readonly fields: Readonly<Record<WaitlistField, WaitlistFieldContent>>;
   readonly errors: Readonly<Record<WaitlistError, string>>;
+  readonly honeypotLabel: string;
   readonly submitLabel: string;
   readonly submittingLabel: string;
   readonly saved: string;
