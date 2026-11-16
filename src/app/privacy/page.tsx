@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { MessagePage } from "@/components/sections/message-page";
 import { site } from "@/content";
+import { pageMetadata } from "../shared-metadata";
 
 export const metadata: Metadata = {
-  title: site.privacy.title,
-  description: site.privacy.description,
-  alternates: { canonical: "/privacy/" },
+  ...pageMetadata({
+    title: site.privacy.title,
+    description: site.privacy.description,
+    path: "/privacy/",
+  }),
   robots: { index: false, follow: true },
 };
 
