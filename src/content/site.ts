@@ -1,4 +1,4 @@
-import { placeholder } from "@/lib/placeholder";
+import { placeholder as markPending } from "@/lib/placeholder";
 import { heroImage, problemImage } from "./images";
 import type { SiteContent } from "./types";
 
@@ -7,6 +7,11 @@ export const PRODUCT_NAME = "Schmeide";
 export const DOMAIN = "schmeide.com";
 
 export const SITE_URL = `https://${DOMAIN}`;
+
+export const PLACEHOLDER_LABEL = "Placeholder";
+
+const placeholder = (note: string, fallback: string | null = null) =>
+  markPending(`${PLACEHOLDER_LABEL}: ${note}`, fallback);
 
 const TAGLINE =
   "Tell us about your business. We will build the software for it.";
