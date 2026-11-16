@@ -45,7 +45,7 @@ Import direction, enforced by ESLint and `src/invariants.test.ts`:
 | `src/components` | `src/lib`, other components, and **types only** from `@/content` |
 | `src/app`        | everything                                                       |
 
-Within components: `ui` imports only `lib`. `layout` may use `ui`. `sections` use `layout`, `ui` and `islands`. `islands` use `ui` and `lib`.
+Within components: `ui` imports only `lib`. `layout` may use `ui`. `sections` use `layout`, `ui` and `islands`. `SiteHeader` in `layout` also slots in the `DismissibleMenu` island. `islands` use `ui` and `lib`.
 
 The path alias is `@/` for `src/`. The content module is always imported as `@/content`, never by a deeper path.
 
@@ -82,7 +82,7 @@ answer: placeholder("support details", "We monitor it, and we can roll back a ba
 
 ## 3. Component conventions
 
-- **Server first.** Every component is a server component unless it needs state, effects or browser events. A client component is allowed only when the feature cannot work with HTML and CSS alone (`<details>`, `:target`, anchors and CSS scroll effects come first). It lives in `components/islands/`, is as small as possible, and receives server-rendered content as props or `children`. See [decision 0003](decisions/0003-client-islands.md). The only island is `WaitlistForm` (#14). The mobile menu and the FAQ are native `<details>`, and the diagram animates with CSS. See [decision 0006](decisions/0006-helpers-and-choices-from-the-build.md).
+- **Server first.** Every component is a server component unless it needs state, effects or browser events. A client component is allowed only when the feature cannot work with HTML and CSS alone (`<details>`, `:target`, anchors and CSS scroll effects come first). It lives in `components/islands/`, is as small as possible, and receives server-rendered content as props or `children`. See [decision 0003](decisions/0003-client-islands.md). The islands are `WaitlistForm` (#14) and `DismissibleMenu` (#24), which wraps the native `<details>` of the mobile menu so it closes on a link, Escape or a click outside. The FAQ is native `<details>`, and the diagram animates with CSS. See decisions [0006](decisions/0006-helpers-and-choices-from-the-build.md) and [0007](decisions/0007-mobile-menu-island.md).
 - **Sections receive content as props.** A section takes one `content` prop typed by its content type, plus `children` when a page slots an island into it. It never imports `@/content` values. See [decision 0001](decisions/0001-content-flows-through-props.md).
 
   ```tsx
