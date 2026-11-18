@@ -62,7 +62,7 @@ export const site = {
   meta: {
     title: `${PRODUCT_NAME}: software for your small business, built and run for you`,
     tagline: TAGLINE,
-    description: `${PRODUCT_NAME} builds software for small businesses. We ask questions, show you designs, build only what you approve, and keep it running.`,
+    description: `${PRODUCT_NAME} builds software for small businesses. We ask questions, write up a plan you can read, build only what you approve, and keep it running.`,
   },
 
   mainCta: {
@@ -92,7 +92,7 @@ export const site = {
       "confirm hosting and upkeep, then use: We build it, host it, and keep it working. You never write a prompt or fix a bug.",
       "We do the building. You answer our questions in your own words.",
     ),
-    lead: "For small businesses. We ask good questions, show you designs, and build only what you approve.",
+    lead: "For small businesses. We ask good questions, write up a plan in plain language, and build only what you approve.",
     secondaryCta: { label: "How it works", href: "#how" },
     conversation: {
       label: "Example conversation",
@@ -105,7 +105,8 @@ export const site = {
         "Do you take a deposit, or payment in full?",
         "Which parts of a cake can customers change?",
       ],
-      caption: "We keep asking until we understand. Then we show you designs.",
+      caption:
+        "We keep asking until we understand. Then we write it up as a plan.",
     },
     image: heroImage,
   },
@@ -166,13 +167,13 @@ export const site = {
         checks: [],
       },
       {
-        id: "designs",
+        id: "spec",
         phase: "understand",
-        title: "You review designs",
+        title: "You review the spec",
         description:
-          "See real screens before anything is built. Tell us what to change and we refine them.",
-        ownerDoes: "Look at the screens and say what is wrong or missing.",
-        weDo: "Draw the screens, then redraw them until they fit.",
+          "We write the spec: what it does, the screens it has and the information it keeps. Tell us what to change.",
+        ownerDoes: "Read the spec and say what is wrong or missing.",
+        weDo: "Write it in plain language, then revise it until it fits.",
         isApprovalGate: false,
         checks: [],
       },
@@ -182,8 +183,8 @@ export const site = {
         title: "You say yes",
         description:
           "Nothing is built until you approve. This is the most important step.",
-        ownerDoes: "Approve the designs when they match what you want.",
-        weDo: "Turn the approved designs into a detailed plan.",
+        ownerDoes: "Approve the spec when it matches what you want.",
+        weDo: "Split the approved spec into pieces of work.",
         isApprovalGate: true,
         checks: ["Your approval"],
       },
@@ -230,7 +231,7 @@ export const site = {
     items: [
       {
         title: "Software made for your business",
-        body: "Built from your answers and the designs you approved. Not a template with your logo on it.",
+        body: "Built from your answers and the plan you approved. Not a template with your logo on it.",
       },
       {
         title: "Real hosting",
@@ -276,11 +277,11 @@ export const site = {
     items: [
       {
         title: "The whole job, in one service",
-        body: "Questions, designs, building, hosting and upkeep. You do not stitch five tools together.",
+        body: "Questions, a written plan, building, hosting and upkeep. You do not stitch five tools together.",
       },
       {
         title: "Understanding before code",
-        body: "We do not start from a single sentence. We start from many questions and a design you approved.",
+        body: "We do not start from a single sentence. We start from many questions and a written plan you approved.",
       },
       {
         title: "Run by people who keep software running",
@@ -416,7 +417,7 @@ export const site = {
       {
         question: "Do I need to know how to code?",
         answer:
-          "No. You tell us about your business and react to designs. We handle the technical side.",
+          "No. You tell us about your business and read the plan we write. We handle the technical side.",
       },
       {
         question: "What kind of software do you build?",
@@ -429,7 +430,7 @@ export const site = {
         question: "What is automated, and what does a person check?",
         answer: placeholder(
           "what a person reviews on our side, to be confirmed",
-          "Much of the building is automated, and every piece must pass checks before it ships. You review and approve the designs before anything is built.",
+          "Much of the building is automated, and every piece must pass checks before it ships. You read and approve the written plan before anything is built.",
         ),
       },
       {
