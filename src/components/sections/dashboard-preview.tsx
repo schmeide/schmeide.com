@@ -1,3 +1,4 @@
+import { CopyText } from "@/components/ui/copy-text";
 import type { DashboardPreviewContent } from "@/content";
 import { cx } from "@/lib/cx";
 
@@ -51,7 +52,7 @@ export const DashboardPreview = ({ content }: DashboardPreviewProps) => (
       </div>
     </div>
     <figcaption className="text-small text-ink-muted">
-      {content.caption}
+      <CopyText copy={content.caption} />
     </figcaption>
   </figure>
 );

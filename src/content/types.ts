@@ -104,7 +104,7 @@ export type HowItWorksContent = SectionIntro & {
 export type DashboardPreviewContent = {
   readonly usageLabel: string;
   readonly costLabel: string;
-  readonly caption: string;
+  readonly caption: Copy;
 };
 
 export type WhatYouGetContent = SectionIntro & {
