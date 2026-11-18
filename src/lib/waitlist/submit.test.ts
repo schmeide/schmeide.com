@@ -60,6 +60,18 @@ describe("pickAdapter", () => {
   });
 });
 
+describe("pickAdapter with a starting point", () => {
+  it("posts the starting point with the entry", async () => {
+    const send = respondWith(200);
+    const withStart = { ...entry, startingPoint: "invoices" } as const;
+    await pickAdapter("https://example.com/w", send, null)(withStart);
+    expect(send).toHaveBeenCalledWith(
+      "https://example.com/w",
+      expect.objectContaining({ body: JSON.stringify(withStart) }),
+    );
+  });
+});
+
 describe("pickAdapter timeout", () => {
   afterEach(() => {
     vi.useRealTimers();

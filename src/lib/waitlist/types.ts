@@ -1,10 +1,13 @@
 import type { Result } from "@/lib/result";
+import type { StartingPointId } from "@/lib/starting-points";
 
 export type WaitlistField = "name" | "email" | "business";
 
 export type WaitlistInput = Readonly<Record<WaitlistField, string>>;
 
-export type WaitlistEntry = Readonly<Record<WaitlistField, string>>;
+export type WaitlistEntry = Readonly<Record<WaitlistField, string>> & {
+  readonly startingPoint?: StartingPointId;
+};
 
 export type WaitlistError =
   | "name_required"
