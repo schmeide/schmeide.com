@@ -205,6 +205,12 @@ export const site = {
         ),
       },
       {
+        title: "Your code and your data",
+        body: placeholder(
+          "confirm export works for a customer, then use: Download both whenever you want.",
+        ),
+      },
+      {
         title: "Work that continues",
         body: "We keep improving your software after launch. Every change goes through the same checks.",
       },
@@ -323,7 +329,9 @@ export const site = {
       },
       {
         question: "Who owns the software?",
-        answer: placeholder("ownership terms to be confirmed"),
+        answer: placeholder(
+          "confirm export works for a customer, then use: You own the code and the data. You can download both whenever you want: the code as a git repository and the data as a full copy of your database.",
+        ),
       },
       {
         question: "What happens if something breaks?",
