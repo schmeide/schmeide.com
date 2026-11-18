@@ -10,3 +10,4 @@ public/images
 test-results
 playwright-report
 .lighthouseci
+out-open

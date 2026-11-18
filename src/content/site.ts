@@ -1,3 +1,5 @@
+import { appHref } from "@/lib/href";
+import type { AppHref } from "@/lib/href";
 import { placeholder as markPending } from "@/lib/placeholder";
 import { heroImage, problemImage } from "./images";
 import type { SiteContent } from "./types";
@@ -7,6 +9,8 @@ export const PRODUCT_NAME = "Schmeide";
 export const DOMAIN = "schmeide.com";
 
 export const SITE_URL = `https://${DOMAIN}`;
+
+export const APP_URL: AppHref = "https://schmeide.app";
 
 export const PLACEHOLDER_LABEL = "Placeholder";
 
@@ -23,6 +27,11 @@ export const site = {
     description: `${PRODUCT_NAME} builds software for small businesses. We ask questions, show you designs, build only what you approve, and keep it running.`,
   },
 
+  mainCta: {
+    invite: { label: "Get early access", href: "/early-access/" },
+    open: { label: "Sign up", href: appHref(APP_URL, { name: "signUp" }) },
+  },
+
   nav: {
     label: "Main",
     menuLabel: "Menu",
@@ -32,7 +41,7 @@ export const site = {
       { label: "What you get", href: "#what-you-get" },
       { label: "Questions", href: "#faq" },
     ],
-    cta: { label: "Get early access", href: "#early-access" },
+    signIn: { label: "Sign in", href: appHref(APP_URL, { name: "signIn" }) },
   },
 
   hero: {
@@ -46,7 +55,6 @@ export const site = {
       "We do the building. You answer our questions in your own words.",
     ),
     lead: "For small businesses. We ask good questions, show you designs, and build only what you approve.",
-    primaryCta: { label: "Join the early-access list", href: "#early-access" },
     secondaryCta: { label: "How it works", href: "#how" },
     conversation: {
       label: "Example conversation",
@@ -304,6 +312,14 @@ export const site = {
     ),
   },
 
+  earlyAccessPage: {
+    href: "/early-access/",
+    navLabel: "Early access",
+    title: "Early access",
+    description: `${PRODUCT_NAME} is open by invitation for now. Join the early-access list and tell us about your business.`,
+    lead: `${PRODUCT_NAME} is open by invitation for now. Join the list and tell us a little about your business.`,
+  },
+
   faq: {
     heading: "Fair questions",
     lead: "If yours is not here, ask us when you join.",
@@ -364,7 +380,6 @@ export const site = {
   finalCta: {
     heading: "Tell us about your business",
     lead: "Join the early-access list. It takes a minute.",
-    cta: { label: "Join the early-access list", href: "#early-access" },
   },
 
   footer: {
@@ -372,6 +387,7 @@ export const site = {
     domain: DOMAIN,
     copyright: "Copyright",
     contact: placeholder("contact email address"),
+    pagesLabel: "Pages",
     legalLabel: "Legal",
     legalLinks: [
       { label: "Privacy", href: "/privacy/" },

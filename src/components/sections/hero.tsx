@@ -5,16 +5,17 @@ import { CopyText } from "@/components/ui/copy-text";
 import { Highlight } from "@/components/ui/highlight";
 import { RoundedImage } from "@/components/ui/rounded-image";
 import { TextLink } from "@/components/ui/text-link";
-import type { HeroContent } from "@/content";
+import type { HeroContent, LinkContent } from "@/content";
 import { Conversation } from "./conversation";
 
 export type HeroProps = {
   readonly content: HeroContent;
+  readonly cta: LinkContent;
 };
 
 const HEADING_ID = "hero-heading";
 
-export const Hero = ({ content }: HeroProps) => (
+export const Hero = ({ content, cta }: HeroProps) => (
   <Section id={null} labelledBy={HEADING_ID} tone="surface" spacing="hero">
     <div className="grid items-center gap-14 lg:grid-cols-2">
       <div>
@@ -30,12 +31,8 @@ export const Hero = ({ content }: HeroProps) => (
           {content.lead}
         </p>
         <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <ButtonLink
-            href={content.primaryCta.href}
-            variant="primary"
-            size="large"
-          >
-            {content.primaryCta.label}
+          <ButtonLink href={cta.href} variant="primary" size="large">
+            {cta.label}
           </ButtonLink>
           <TextLink href={content.secondaryCta.href} weight="strong">
             {content.secondaryCta.label}

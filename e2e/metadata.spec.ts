@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 const content = (page: Page, selector: string) =>
   page.locator(selector).first().getAttribute("content");
 
-for (const path of ["/", "/privacy/", "/terms/"]) {
+for (const path of ["/", "/early-access/", "/privacy/", "/terms/"]) {
   test(`describes ${path} in its Open Graph and Twitter tags`, async ({
     page,
   }) => {

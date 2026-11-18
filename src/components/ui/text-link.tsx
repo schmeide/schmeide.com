@@ -2,7 +2,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cx } from "@/lib/cx";
-import { isAnchorHref } from "@/lib/href";
+import { isPlainHref } from "@/lib/href";
 
 export type TextLinkWeight = "regular" | "strong";
 
@@ -21,7 +21,7 @@ const weights = {
 } as const satisfies Record<TextLinkWeight, string>;
 
 export const TextLink = ({ href, weight, children }: TextLinkProps) =>
-  isAnchorHref(href) ? (
+  isPlainHref(href) ? (
     <a href={href} className={cx(base, weights[weight])}>
       {children}
     </a>

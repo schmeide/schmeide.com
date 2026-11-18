@@ -15,6 +15,7 @@ test("has no serious accessibility violations", async ({ page }) => {
 });
 
 for (const [label, path] of [
+  ["the early-access page", "/early-access/"],
   ["the privacy page", "/privacy/"],
   ["the terms page", "/terms/"],
   ["the 404 page", "/no-such-page/"],
@@ -164,7 +165,7 @@ test("shows the headline, the accountability line and the main call to action on
   for (const element of [
     heading,
     heading.locator("+ p"),
-    page.locator('main a[href="#early-access"]').first(),
+    page.locator('main a[href="/early-access/"]').first(),
   ]) {
     await expect(element).toBeInViewport({ ratio: 1 });
   }

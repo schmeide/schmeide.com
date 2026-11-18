@@ -8,6 +8,7 @@ import { Container } from "./container";
 export type SiteHeaderProps = {
   readonly name: string;
   readonly nav: NavContent;
+  readonly cta: LinkContent;
 };
 
 type NavLinksProps = {
@@ -26,7 +27,7 @@ const NavLinks = ({ links }: NavLinksProps) =>
     </li>
   ));
 
-export const SiteHeader = ({ name, nav }: SiteHeaderProps) => (
+export const SiteHeader = ({ name, nav, cta }: SiteHeaderProps) => (
   <header>
     <Container>
       <div className="relative flex items-center justify-between gap-4 py-6">
@@ -41,14 +42,14 @@ export const SiteHeader = ({ name, nav }: SiteHeaderProps) => (
             role="list"
             className="flex items-center gap-6 text-nav font-medium"
           >
-            <NavLinks links={nav.links} />
+            <NavLinks links={[...nav.links, nav.signIn]} />
             <li>
               <ButtonLink
-                href={toHomeHref(nav.cta.href)}
+                href={toHomeHref(cta.href)}
                 variant="primary"
                 size="regular"
               >
-                {nav.cta.label}
+                {cta.label}
               </ButtonLink>
             </li>
           </ul>
@@ -65,14 +66,14 @@ export const SiteHeader = ({ name, nav }: SiteHeaderProps) => (
               role="list"
               className="absolute inset-x-0 top-full z-10 flex flex-col gap-1 rounded-card bg-mint p-5 text-nav font-medium"
             >
-              <NavLinks links={nav.links} />
+              <NavLinks links={[...nav.links, nav.signIn]} />
               <li className="pt-2">
                 <ButtonLink
-                  href={toHomeHref(nav.cta.href)}
+                  href={toHomeHref(cta.href)}
                   variant="primary"
                   size="regular"
                 >
-                  {nav.cta.label}
+                  {cta.label}
                 </ButtonLink>
               </li>
             </ul>

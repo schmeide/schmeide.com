@@ -103,6 +103,15 @@ describe("repo invariants", () => {
     ).toEqual([]);
   });
 
+  it("writes the app's address as a literal only in src/content/site.ts", () => {
+    const appDomain = new RegExp(`${PRODUCT_NAME}\\.app`, "i");
+    expect(
+      pathsWhere(
+        ({ path, text }) => path !== "content/site.ts" && appDomain.test(text),
+      ),
+    ).toEqual([]);
+  });
+
   it("keeps client components inside src/components/islands", () => {
     const directive = /^\s*["']use client["']/m;
     expect(

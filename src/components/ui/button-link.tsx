@@ -1,7 +1,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { isAnchorHref } from "@/lib/href";
+import { isPlainHref } from "@/lib/href";
 import { buttonClass } from "./button-styles";
 import type { ButtonSize, ButtonVariant } from "./button-styles";
 
@@ -18,7 +18,7 @@ export const ButtonLink = ({
   size,
   children,
 }: ButtonLinkProps) =>
-  isAnchorHref(href) ? (
+  isPlainHref(href) ? (
     <a href={href} className={buttonClass(variant, size)}>
       {children}
     </a>

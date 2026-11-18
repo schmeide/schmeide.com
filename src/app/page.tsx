@@ -14,6 +14,7 @@ import { JsonLd } from "@/components/ui/json-ld";
 import { site } from "@/content";
 import { isConfirmed } from "@/lib/placeholder";
 import { faqPageJsonLd } from "@/lib/structured-data";
+import { mainCta } from "./pages";
 import { socialMetadata } from "./shared-metadata";
 
 export const metadata: Metadata = {
@@ -32,7 +33,7 @@ const confirmedAnswers = site.faq.items.flatMap(({ question, answer }) =>
 export default function HomePage() {
   return (
     <main id="main">
-      <Hero content={site.hero} />
+      <Hero content={site.hero} cta={mainCta} />
       <Problem content={site.problem} />
       <HowItWorks content={site.howItWorks} />
       <WhatYouGet content={site.whatYouGet} />
@@ -43,7 +44,7 @@ export default function HomePage() {
         <WaitlistForm content={site.waitlistForm} />
       </EarlyAccess>
       <Faq content={site.faq} />
-      <FinalCta content={site.finalCta} />
+      <FinalCta content={site.finalCta} cta={mainCta} />
       {confirmedAnswers.length === 0 ? null : (
         <JsonLd data={faqPageJsonLd(confirmedAnswers)} />
       )}
