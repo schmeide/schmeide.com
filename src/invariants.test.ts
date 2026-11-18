@@ -78,6 +78,15 @@ const HEX_ALLOWED: readonly string[] = ["app/globals.css", "lib/theme.ts"];
 
 const EMOJI = /(?![\u00a9\u00ae\u2122])\p{Extended_Pictographic}|\ufe0f/u;
 
+const BUILDER_LANGUAGE = /vibe coding|ai app builder|no-code/i;
+
+const COMPETITORS: readonly string[] = ["Base44"];
+
+const bannedInContent = new RegExp(
+  [BUILDER_LANGUAGE.source, ...COMPETITORS].join("|"),
+  "i",
+);
+
 const RUNTIME_DEPENDENCIES: readonly string[] = ["next", "react", "react-dom"];
 
 const pathsWhere = (
@@ -168,6 +177,17 @@ describe("repo invariants", () => {
       repoSources
         .filter(({ text }) => EMOJI.test(text))
         .map(({ path }) => path),
+    ).toEqual([]);
+  });
+
+  it("keeps builder language and competitor names out of src/content", () => {
+    expect(
+      pathsWhere(
+        ({ path, text }) =>
+          path.startsWith("content/") &&
+          !path.endsWith(".test.ts") &&
+          bannedInContent.test(text),
+      ),
     ).toEqual([]);
   });
 

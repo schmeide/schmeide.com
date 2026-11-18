@@ -62,6 +62,7 @@ export type ConversationContent = {
 
 export type HeroContent = {
   readonly heading: HighlightedHeading;
+  readonly accountability: Copy;
   readonly lead: string;
   readonly primaryCta: LinkContent;
   readonly secondaryCta: LinkContent;

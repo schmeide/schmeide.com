@@ -154,3 +154,18 @@ test("keeps the legal pages out of search results", async ({ page }) => {
     await expect(page.locator("h1")).toHaveCount(1);
   }
 });
+
+test("shows the headline, the accountability line and the main call to action on a phone without scrolling", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const heading = page.locator("h1");
+  for (const element of [
+    heading,
+    heading.locator("+ p"),
+    page.locator('main a[href="#early-access"]').first(),
+  ]) {
+    await expect(element).toBeInViewport({ ratio: 1 });
+  }
+});
