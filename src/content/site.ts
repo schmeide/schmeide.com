@@ -2,7 +2,8 @@ import { appHref } from "@/lib/href";
 import type { AppHref } from "@/lib/href";
 import { placeholder as markPending } from "@/lib/placeholder";
 import { heroImage, problemImage } from "./images";
-import type { SiteContent } from "./types";
+import type { StartingPointId } from "@/lib/starting-points";
+import type { SiteContent, UseCaseContent } from "./types";
 
 export const PRODUCT_NAME = "Schmeide";
 
@@ -16,6 +17,43 @@ export const PLACEHOLDER_LABEL = "Placeholder";
 
 const placeholder = (note: string, fallback: string | null = null) =>
   markPending(`${PLACEHOLDER_LABEL}: ${note}`, fallback);
+
+type UseCaseSeed = {
+  readonly slug: string;
+  readonly startingPoint: StartingPointId;
+  readonly navLabel: string;
+  readonly trade: string;
+  readonly thing: string;
+};
+
+const tradePage = ({
+  slug,
+  startingPoint,
+  navLabel,
+  trade,
+  thing,
+}: UseCaseSeed): UseCaseContent => ({
+  href: `/for/${slug}/`,
+  slug,
+  startingPoint,
+  navLabel,
+  trade,
+  title: `${navLabel} for ${trade}`,
+  description: `Software for ${thing} at ${trade}, built from your answers and a plan you approve.`,
+  heading: `What do you use for ${thing} today, and what must not change?`,
+  lead: `Tell us how you handle ${thing} now. We start from what you already have, not from a blank page.`,
+  pain: placeholder(
+    `the spreadsheet problem for ${trade}, in a real owner's words`,
+  ),
+  sampleSpec: {
+    users: placeholder(`sample plan for ${thing}: who uses it`),
+    does: placeholder(`sample plan for ${thing}: what it does`),
+    screens: placeholder(`sample plan for ${thing}: screens`),
+    keeps: placeholder(`sample plan for ${thing}: what it keeps`),
+    replaces: placeholder(`sample plan for ${thing}: what it replaces`),
+  },
+  screenshots: placeholder(`screenshots of a real sample build for ${thing}`),
+});
 
 const TAGLINE =
   "Tell us about your business. We will build the software for it.";
@@ -311,6 +349,57 @@ export const site = {
       "Pricing is not set yet. Joining the list is free and commits you to nothing.",
     ),
   },
+
+  useCasePage: {
+    painHeading: "The spreadsheet today",
+    specHeading: "A sample plan",
+    specLead: `Before anything is built, ${PRODUCT_NAME} writes a plan in plain words. This is what one looks like for a business like this.`,
+    specParts: {
+      users: "Who uses it",
+      does: "What it does",
+      screens: "Screens",
+      keeps: "What it keeps",
+      replaces: "What it replaces",
+    },
+    screenshotsHeading: "What it looks like",
+    ctaHeading: "Start from here",
+    ctaLead: {
+      invite:
+        "Ask for early access. Your request will say this is where you want to start.",
+      open: "Sign up, then pick this starting point in the app.",
+    },
+  },
+
+  useCases: [
+    tradePage({
+      slug: "invoicing",
+      startingPoint: "invoices",
+      navLabel: "Invoicing",
+      trade: "a service business",
+      thing: "invoices",
+    }),
+    tradePage({
+      slug: "bookings",
+      startingPoint: "bookings",
+      navLabel: "Bookings",
+      trade: "a studio",
+      thing: "bookings",
+    }),
+    tradePage({
+      slug: "stock",
+      startingPoint: "stock-list",
+      navLabel: "Stock",
+      trade: "a shop",
+      thing: "stock",
+    }),
+    tradePage({
+      slug: "job-tracking",
+      startingPoint: "job-tracker",
+      navLabel: "Job tracking",
+      trade: "a contractor",
+      thing: "tracking jobs",
+    }),
+  ],
 
   earlyAccessPage: {
     href: "/early-access/",

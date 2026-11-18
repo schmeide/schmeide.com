@@ -112,3 +112,22 @@ test("shows saved and sends nothing when the honeypot is filled", async ({
   await expect(section.locator('[role="status"]')).toBeVisible();
   expect(requests).toBe(0);
 });
+
+test("records the starting point a use-case page sent", async ({ page }) => {
+  const bodies: string[] = [];
+  await page.route(WAITLIST_ENDPOINT, async (route) => {
+    bodies.push(route.request().postData() ?? "");
+    await route.fulfill({ status: 200, json: { ok: true } });
+  });
+  for (const search of ["?start=invoices", "?start=payroll"]) {
+    await page.goto(`/early-access/${search}`);
+    const section = page.locator("#early-access");
+    await fillEntry(section);
+    await section.locator('button[type="submit"]').click();
+    await expect(section.locator('[role="status"]')).toBeVisible();
+  }
+  expect(bodies.map((body) => JSON.parse(body))).toEqual([
+    { ...entry, startingPoint: "invoices" },
+    entry,
+  ]);
+});

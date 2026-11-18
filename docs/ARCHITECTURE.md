@@ -176,7 +176,8 @@ What works, checked against Next.js 16.4 in this repo:
 - `not-found.tsx` becomes `out/404.html`, which GitHub Pages serves for unknown paths.
 - With `trailingSlash: true`, `/privacy` is written as `out/privacy/index.html`. Internal page links end with a slash.
 - The launch mode is the build-time value `NEXT_PUBLIC_LAUNCH_MODE` (`invite`, the default, or `open`), read only in `src/lib/env.ts`. Switching it means a new build. The Playwright suite builds both modes: `out/` for `invite` and `out-open/` for `open`.
-- An inner page that is not ready is still exported, as a `noindex` page left out of the footer and the sitemap. A dynamic route such as `/for/[slug]/` may instead leave a page that is not ready out of `generateStaticParams`.
+- An inner page that is not ready is still exported, as a `noindex` page left out of the footer and the sitemap.
+- Use-case pages live at `/for/[slug]/` with `dynamicParams = false`. With `output: "export"`, `generateStaticParams` must return at least one route, so it returns every use case. In production a use case that is not ready calls `notFound()`, and its path holds only the `noindex` not-found page: none of its copy is exported.
 
 Hosting files such as `public/CNAME` and `public/.nojekyll` belong to #3.
 
@@ -194,6 +195,7 @@ WaitlistForm (island) ── WaitlistInput ──▶ validateWaitlist ── Res
 - `validateWaitlist: (input: WaitlistInput) => Result<WaitlistEntry, FieldErrors>` in `lib/waitlist/validate.ts`. Pure. Plain functions, no schema library. It returns error codes (`WaitlistError`), never messages.
 - `submitWaitlist: (entry: WaitlistEntry) => Promise<SubmitResult>` in `lib/waitlist/submit.ts`. It picks a `WaitlistAdapter` and calls it. It never throws: a network failure becomes `{ status: "failed", reason: "network" }`.
 - `WaitlistAdapter` has the same signature as `submitWaitlist`. Two exist: `endpointAdapter`, which posts JSON to `NEXT_PUBLIC_WAITLIST_ENDPOINT`, and `unconfiguredAdapter`, which returns `{ status: "unconfigured" }` when no endpoint is set.
+- A use-case page links to `/early-access/?start=<id>`. On submit the form island reads `start` with `startingPointFrom` from `@/lib/starting-points`, keeps it only if it is a known `StartingPointId`, and adds it to the entry as `startingPoint`. Without one, the entry is unchanged.
 - `SubmitResult` is `saved`, `unconfigured` or `failed`. The form shows a different message for each. `unconfigured` must never be shown as success.
 - Messages come from `site.waitlistForm`, which maps every `WaitlistError` and every result status to text. The form island receives that object as a prop.
 - The endpoint is read in `src/lib/env.ts` and passed to the adapter picker as an argument, so adapter selection is a pure function of its input and easy to test.
@@ -218,7 +220,7 @@ Types are in `src/lib/images/types.ts`. #17 implemented them. See [decision 0005
 | Lint       | ESLint                   | Import direction, no classes, no inline styles, no literal copy in JSX, no default exports                                                                                                                                                               | all     |
 | Unit       | Vitest, node environment | Pure functions in `src/lib`: validation, adapter selection, path helpers, `resolveCopy`. The pure parts of `scripts/build-images.ts` are unit tested in `scripts/build-images.test.ts`; the image-files invariant still checks the committed derivatives | all     |
 | Invariants | Vitest                   | `src/invariants.test.ts` and content tests: brand literal, island location, no server actions, content rules, image files                                                                                                                                | #6, #17 |
-| Browser    | Playwright with axe      | The built `out/`: no serious axe violations, keyboard pass, waitlist submit against a mocked endpoint, 320px layout                                                                                                                                      | #16     |
+| Browser    | Playwright with axe      | The built `out/` (and `out-open/` for link checks), plus `next dev` for pages that only render with placeholders shown: no serious axe violations, keyboard pass, waitlist submit against a mocked endpoint, 320px layout                                | #16     |
 | Budgets    | Lighthouse CI            | Performance, accessibility, best practices and SEO scores on `out/`, plus a JavaScript size budget                                                                                                                                                       | #16     |
 
 - Unit tests sit next to the code as `*.test.ts`. A new pure function in `src/lib` comes with a test.
@@ -244,6 +246,7 @@ Types are in `src/lib/images/types.ts`. #17 implemented them. See [decision 0005
   | `resolve`, `isShown`                                         | `src/lib/copy.ts`            | Resolve copy with the build's placeholder mode  |
   | `isAnchorHref`, `isPlainHref`, `toHomeHref`, `appHref`       | `src/lib/href.ts`            | Tell anchors from routes; build app addresses   |
   | `launchModeFor`, `pickForMode`                               | `src/lib/launch-mode.ts`     | Read the launch mode; pick a value for it       |
+  | `startingPointFrom`, `withStartingPoint`                     | `src/lib/starting-points.ts` | Carry a use case's starting point to the form   |
   | `isReady`, `isListed`                                        | `src/lib/ready.ts`           | The ready rule for inner pages                  |
   | `imageFilePath`, `imageSrcSet`, `heightFor`                  | `src/lib/images/path.ts`     | Paths and sizes of image derivatives            |
   | `faqPageJsonLd`, `organizationJsonLd`, `serializeJsonLd`     | `src/lib/structured-data.ts` | Build JSON-LD objects                           |

@@ -99,6 +99,18 @@ test("sends the main call to action where the launch mode says", async ({
   }
 });
 
+test("leaves unconfirmed use-case pages out of the production build", async ({
+  page,
+}) => {
+  await page.goto("/for/invoicing/");
+  await expect(
+    page.locator('meta[name="robots"][content*="noindex"]'),
+  ).not.toHaveCount(0);
+  await expect(page.locator("body")).not.toContainText(/invoices today/i);
+  await page.goto("/");
+  await expect(page.locator('a[href^="/for/"]')).toHaveCount(0);
+});
+
 test("serves a 404 page for an unknown path", async ({ request }) => {
   const response = await request.get("/no-such-page/");
   expect(response.status()).toBe(404);

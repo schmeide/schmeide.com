@@ -6,7 +6,10 @@ import { pickForMode } from "@/lib/launch-mode";
 import { isListed, isReady } from "@/lib/ready";
 import { pageMetadata } from "./shared-metadata";
 
-export const innerPages: readonly InnerPageContent[] = [site.earlyAccessPage];
+export const innerPages: readonly InnerPageContent[] = [
+  site.earlyAccessPage,
+  ...site.useCases,
+];
 
 export const listedPages = innerPages.filter((page) =>
   isListed(page, PLACEHOLDER_MODE),

@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import { buttonClass } from "@/components/ui/button-styles";
 import type { WaitlistFormContent } from "@/content";
 import { cx } from "@/lib/cx";
+import { startingPointFrom } from "@/lib/starting-points";
 import { submitWaitlist } from "@/lib/waitlist/submit";
 import type {
   FieldErrors,
@@ -105,7 +106,12 @@ export const WaitlistForm = ({ content }: WaitlistFormProps) => {
       return;
     }
     setState({ status: "submitting", errors: {} });
-    const result = await submitWaitlist(validated.value);
+    const start = startingPointFrom(window.location.search);
+    const result = await submitWaitlist(
+      start === null
+        ? validated.value
+        : { ...validated.value, startingPoint: start },
+    );
     setState({ status: result.status, errors: {} });
   };
 

@@ -4,6 +4,8 @@ const INVITE_PORT = 4173;
 
 const OPEN_PORT = 4174;
 
+const DEV_PORT = 4175;
+
 const OPEN_DIR = "out-open";
 
 export const WAITLIST_ENDPOINT = "https://waitlist.invalid/submit";
@@ -17,6 +19,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testIgnore: "use-cases.spec.ts",
       use: {
         ...devices["Desktop Chrome"],
         baseURL: `http://localhost:${INVITE_PORT}`,
@@ -30,18 +33,34 @@ export default defineConfig({
         baseURL: `http://localhost:${OPEN_PORT}`,
       },
     },
+    {
+      name: "chromium-dev",
+      testMatch: "use-cases.spec.ts",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: `http://localhost:${DEV_PORT}`,
+      },
+    },
   ],
-  webServer: {
-    command: [
-      `rm -rf ${OPEN_DIR}`,
-      `NEXT_PUBLIC_LAUNCH_MODE=open next build`,
-      `mv out ${OPEN_DIR}`,
-      `next build`,
-      `(serve ${OPEN_DIR} -l ${OPEN_PORT} & serve out -l ${INVITE_PORT})`,
-    ].join(" && "),
-    url: `http://localhost:${INVITE_PORT}`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 360_000,
-    env: { NEXT_PUBLIC_WAITLIST_ENDPOINT: WAITLIST_ENDPOINT },
-  },
+  webServer: [
+    {
+      command: [
+        `rm -rf ${OPEN_DIR}`,
+        `NEXT_PUBLIC_LAUNCH_MODE=open next build`,
+        `mv out ${OPEN_DIR}`,
+        `next build`,
+        `(serve ${OPEN_DIR} -l ${OPEN_PORT} & serve out -l ${INVITE_PORT})`,
+      ].join(" && "),
+      url: `http://localhost:${INVITE_PORT}`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 360_000,
+      env: { NEXT_PUBLIC_WAITLIST_ENDPOINT: WAITLIST_ENDPOINT },
+    },
+    {
+      command: `next dev --port ${DEV_PORT}`,
+      url: `http://localhost:${DEV_PORT}`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 180_000,
+    },
+  ],
 });

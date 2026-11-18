@@ -1,11 +1,11 @@
 import { Section } from "@/components/layout/section";
 import { SectionIntro } from "@/components/layout/section-intro";
 import { ButtonLink } from "@/components/ui/button-link";
-import type { FinalCtaContent, LinkContent } from "@/content";
+import type { FinalCtaContent } from "@/content";
 
 export type FinalCtaProps = {
   readonly content: FinalCtaContent;
-  readonly cta: LinkContent;
+  readonly cta: { readonly label: string; readonly href: string };
 };
 
 const HEADING_ID = "final-cta-heading";
