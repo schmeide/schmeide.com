@@ -1,6 +1,6 @@
 # Agent guide
 
-This repo is the marketing site for schmeide.com: one landing page plus a few stub pages, exported as static HTML and served from GitHub Pages.
+This repo is the marketing site for schmeide.com: a landing page and a set of inner pages that link into the app at schmeide.app, exported as static HTML and served from GitHub Pages.
 
 Read these before writing code, in this order:
 

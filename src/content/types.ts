@@ -1,5 +1,7 @@
 import type { ImageSlot } from "@/lib/images/types";
 import type { WaitlistError, WaitlistField } from "@/lib/waitlist/types";
+import type { AppHref } from "@/lib/href";
+import type { ByLaunchMode } from "@/lib/launch-mode";
 import type { Copy } from "@/lib/placeholder";
 
 export type SectionId =
@@ -14,11 +16,21 @@ export type SectionId =
 
 export type SectionHref = `#${SectionId}`;
 
-export type PageHref = "/" | "/privacy/" | "/terms/";
+export type PageHref = "/" | "/privacy/" | "/terms/" | "/early-access/";
+
+export type HomeAnchorHref = `/${SectionHref}`;
 
 export type LinkContent = {
   readonly label: string;
-  readonly href: SectionHref | PageHref;
+  readonly href: SectionHref | HomeAnchorHref | PageHref | AppHref;
+};
+
+export type InnerPageContent = {
+  readonly href: PageHref;
+  readonly navLabel: string;
+  readonly title: string;
+  readonly description: string;
+  readonly lead: Copy;
 };
 
 export type SectionIntro = {
@@ -42,7 +54,7 @@ export type NavContent = {
   readonly menuLabel: string;
   readonly skipLinkLabel: string;
   readonly links: readonly LinkContent[];
-  readonly cta: LinkContent;
+  readonly signIn: LinkContent;
 };
 
 export type HighlightedHeading = {
@@ -64,7 +76,6 @@ export type HeroContent = {
   readonly heading: HighlightedHeading;
   readonly accountability: Copy;
   readonly lead: string;
-  readonly primaryCta: LinkContent;
   readonly secondaryCta: LinkContent;
   readonly conversation: ConversationContent;
   readonly image: ImageSlot | null;
@@ -148,15 +159,14 @@ export type FaqContent = SectionIntro & {
   readonly items: readonly FaqItem[];
 };
 
-export type FinalCtaContent = SectionIntro & {
-  readonly cta: LinkContent;
-};
+export type FinalCtaContent = SectionIntro;
 
 export type FooterContent = {
   readonly name: string;
   readonly domain: string;
   readonly copyright: string;
   readonly contact: Copy;
+  readonly pagesLabel: string;
   readonly legalLabel: string;
   readonly legalLinks: readonly LinkContent[];
 };
@@ -193,6 +203,7 @@ export type WaitlistFormContent = {
 
 export type SiteContent = {
   readonly meta: MetaContent;
+  readonly mainCta: ByLaunchMode<LinkContent>;
   readonly nav: NavContent;
   readonly hero: HeroContent;
   readonly problem: ProblemContent;
@@ -202,6 +213,7 @@ export type SiteContent = {
   readonly proof: ProofContent;
   readonly team: TeamContent;
   readonly earlyAccess: EarlyAccessContent;
+  readonly earlyAccessPage: InnerPageContent;
   readonly faq: FaqContent;
   readonly finalCta: FinalCtaContent;
   readonly footer: FooterContent;

@@ -8,6 +8,7 @@ import { cx } from "@/lib/cx";
 import { organizationJsonLd } from "@/lib/structured-data";
 import { THEME_COLORS, TOUCH_ICON_PATH } from "@/lib/theme";
 import { displayFont, sansFont } from "./fonts";
+import { mainCta, pageLinks } from "./pages";
 import { socialMetadata, titleTemplate } from "./shared-metadata";
 import "./globals.css";
 
@@ -42,9 +43,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-dvh flex-col">
         <SkipLink label={site.nav.skipLinkLabel} />
-        <SiteHeader name={PRODUCT_NAME} nav={site.nav} />
+        <SiteHeader name={PRODUCT_NAME} nav={site.nav} cta={mainCta} />
         <div className="flex-1">{children}</div>
-        <SiteFooter content={site.footer} year={year} />
+        <SiteFooter content={site.footer} pageLinks={pageLinks} year={year} />
         <JsonLd
           data={organizationJsonLd({
             name: PRODUCT_NAME,

@@ -1,6 +1,6 @@
 # Architecture
 
-The marketing site for schmeide.com. One landing page and a few stub pages, built with Next.js App Router, exported as static HTML and served from GitHub Pages. This doc says where things go and why. The rules for day-to-day work are in [AGENTS.md](../AGENTS.md). Product context, voice and claim rules are in the epic, [#1](https://github.com/schmeide/schmeide.com/issues/1).
+The marketing site for schmeide.com. A landing page and a growing set of inner pages that link into the app at schmeide.app, built with Next.js App Router, exported as static HTML and served from GitHub Pages. This doc says where things go and why. The rules for day-to-day work are in [AGENTS.md](../AGENTS.md). Product context, voice and claim rules are in the epic, [#1](https://github.com/schmeide/schmeide.com/issues/1).
 
 The whole design in one picture:
 
@@ -19,14 +19,14 @@ Contents: [1 Layout](#1-directory-layout) · [2 Content](#2-content-module) · [
 
 ```
 src/
-  app/                  routes, layouts, metadata files, globals.css, fonts.ts
+  app/                  routes, layouts, metadata files, globals.css, fonts.ts, pages.ts (the inner-page list, main call to action)
   components/
     ui/                 visual primitives: Button styles, ButtonLink, TextLink, Card, Highlight, StepBadge, ChatBubble, RoundedImage, CopyText, JsonLd, icons
-    layout/             page structure: Section, SectionIntro, Container, Stack, Heading, SiteHeader, SiteFooter, SkipLink
-    sections/           one file per landing page section: Hero, Problem, HowItWorks, ...
+    layout/             page structure: Section, SectionIntro, PageIntro, Container, Stack, Heading, SiteHeader, SiteFooter, SkipLink
+    sections/           one file per page section: Hero, Problem, HowItWorks, EarlyAccess, ...
     islands/            the only place "use client" is allowed
   content/              all copy (site.ts), types (types.ts) and image slots (images.ts), one entry point (index.ts)
-  lib/                  pure functions and shared types; lib/waitlist, lib/images
+  lib/                  pure functions and shared types: href, launch-mode, ready, lib/waitlist, lib/images
   invariants.test.ts    tests that enforce the rules in this doc
 assets/images/          source photos, before processing (#17)
 public/                 files served as they are; public/images holds generated derivatives
@@ -56,8 +56,11 @@ Tickets: #6 wrote the data. #8 to #15 read it.
 - **One entry point:** `src/content/index.ts`. It re-exports `site.ts`, `images.ts` and the types in `types.ts`. If `site.ts` grows, split it into more files in `src/content/` and re-export them from `index.ts`.
 - **Shape:** `types.ts` defines one type per section (`HeroContent`, `FaqContent`, ...) and `SiteContent`, which holds them all. #6 exports `export const site: SiteContent = { ... } as const satisfies SiteContent` style data. #6 may refine a section's type when the copy needs it; the type and the data change together.
 - **Readonly:** every field is `readonly` and every list is `readonly T[]`. Content is never mutated or computed at runtime.
-- **Brand:** `PRODUCT_NAME` in `site.ts` is the only place the name is written. `DOMAIN`, `SITE_URL` and `PLACEHOLDER_LABEL` sit next to it. Copy that mentions the name interpolates the constant. A test fails if the name appears as a literal anywhere else in `src/`.
-- **Links:** `LinkContent.href` is typed as a section anchor (`#early-access`) or a known page path, so a typo fails the typecheck. Section ids come from the `SectionId` union.
+- **Brand:** `PRODUCT_NAME` in `site.ts` is the only place the name is written. `DOMAIN`, `SITE_URL`, `APP_URL` and `PLACEHOLDER_LABEL` sit next to it. A test fails if `schmeide.app` appears as a literal outside `site.ts`. Copy that mentions the name interpolates the constant. A test fails if the name appears as a literal anywhere else in `src/`.
+- **Links:** `LinkContent.href` is one of: a section anchor on the current page (`#how`), a home-page anchor from another page (`/#how`), a known page path with a trailing slash (`PageHref`), or an app address (`AppHref`). A typo in the first three fails the typecheck. Section ids come from the `SectionId` union.
+- **App addresses** are built only by `appHref(APP_URL, route)` from `@/lib/href`, with a route name (`signIn`, or `signUp` with an optional `plan`). No content or component writes an app address by hand. App links are plain `<a>` elements and carry no tracking values.
+- **Main call to action:** `site.mainCta` holds one `LinkContent` per launch mode. `invite` goes to `/early-access/`, `open` goes to the app's sign-up page. `src/app/pages.ts` picks one with `pickForMode(site.mainCta, LAUNCH_MODE)` and passes it to the header, the hero and the final section as a `cta` prop, so no page or component branches on the mode. See [decision 0008](decisions/0008-launch-mode-and-ready-rule.md).
+- **Inner pages:** each inner page has an `InnerPageContent` (`href`, `navLabel`, `title`, `description`, `lead`) and is listed in `innerPages` in `src/app/pages.ts`. A page is **ready** when `isReady` from `@/lib/ready` finds no placeholder and no stand-in image anywhere in its content. In production a page that is not ready is left out of the footer and `sitemap.ts` and is `noindex`; in `pnpm dev` it is listed and shows its placeholder labels.
 
 ### Placeholders
 
@@ -97,8 +100,9 @@ answer: placeholder("support details", "We monitor it, and we can roll back a ba
 - **Primitives know no copy.** `ui` and `layout` components take text as `children` or props and never a content type, apart from `CopyText` and `RoundedImage`, which take the shared `Copy` and `ImageSlot` types from `lib`.
 - **Props:** a type named `<Component>Props`, exported, all fields `readonly`. Variant props are string unions named for meaning, not appearance: `tone="ink"`, `variant="primary"`, `size="large"`. Booleans read as facts: `inverted`, `priority`. No `className` and no `style` props; see topic 4.
 - **Files and exports:** kebab-case file names (`step-badge.tsx`), one component per file, a named export in PascalCase (`StepBadge`). No default exports outside `src/app`, where Next.js requires them. No barrel files in `components/`; import from the file.
-- **Headings:** one `h1`, in the hero. Each section has one `h2`. The `Heading` component takes a `level` and a separate visual `size`, so the outline stays correct when the look changes.
-- **Links:** in-page anchors are plain `<a href="#id">`. Routes use `next/link`. Typed routes are on, so a wrong path fails the typecheck.
+- **Headings:** one `h1` per page: the hero on the home page, `PageIntro` on inner pages. Each section has one `h2`. The `Heading` component takes a `level` and a separate visual `size`, so the outline stays correct when the look changes.
+- **Links:** in-page anchors and app addresses are plain `<a>` (`isPlainHref`). Routes, including `/#how` from another page, use `next/link`. Typed routes are on, so a wrong path fails the typecheck.
+- **Header and footer:** the header holds the home-page anchors, "Sign in" (an app link) and the main call to action. The footer holds the listed inner pages and the legal links. The mobile menu stays a native `<details>`.
 
 ## 4. Styling
 
@@ -171,6 +175,8 @@ What works, checked against Next.js 16.4 in this repo:
 - `src/app/apple-touch-icon.png/route.tsx` and `src/app/manifest.ts` work the same way. The favicon is the static file `public/icon.svg`.
 - `not-found.tsx` becomes `out/404.html`, which GitHub Pages serves for unknown paths.
 - With `trailingSlash: true`, `/privacy` is written as `out/privacy/index.html`. Internal page links end with a slash.
+- The launch mode is the build-time value `NEXT_PUBLIC_LAUNCH_MODE` (`invite`, the default, or `open`), read only in `src/lib/env.ts`. Switching it means a new build. The Playwright suite builds both modes: `out/` for `invite` and `out-open/` for `open`.
+- An inner page that is not ready is still exported, as a `noindex` page left out of the footer and the sitemap. A dynamic route such as `/for/[slug]/` may instead leave a page that is not ready out of `generateStaticParams`.
 
 Hosting files such as `public/CNAME` and `public/.nojekyll` belong to #3.
 
@@ -236,7 +242,9 @@ Types are in `src/lib/images/types.ts`. #17 implemented them. See [decision 0005
   | `placeholder`, `isPlaceholder`, `isConfirmed`, `resolveCopy` | `src/lib/placeholder.ts`     | Mark and resolve unconfirmed copy               |
   | `PLACEHOLDER_MODE` and other environment values              | `src/lib/env.ts`             | The single place build-time environment is read |
   | `resolve`, `isShown`                                         | `src/lib/copy.ts`            | Resolve copy with the build's placeholder mode  |
-  | `isAnchorHref`, `toHomeHref`                                 | `src/lib/href.ts`            | Tell an in-page anchor from a route             |
+  | `isAnchorHref`, `isPlainHref`, `toHomeHref`, `appHref`       | `src/lib/href.ts`            | Tell anchors from routes; build app addresses   |
+  | `launchModeFor`, `pickForMode`                               | `src/lib/launch-mode.ts`     | Read the launch mode; pick a value for it       |
+  | `isReady`, `isListed`                                        | `src/lib/ready.ts`           | The ready rule for inner pages                  |
   | `imageFilePath`, `imageSrcSet`, `heightFor`                  | `src/lib/images/path.ts`     | Paths and sizes of image derivatives            |
   | `faqPageJsonLd`, `organizationJsonLd`, `serializeJsonLd`     | `src/lib/structured-data.ts` | Build JSON-LD objects                           |
   | `THEME_COLORS` and image sizes                               | `src/lib/theme.ts`           | Brand colors for generated images and manifest  |

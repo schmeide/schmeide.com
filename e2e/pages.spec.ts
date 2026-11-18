@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 
-const PAGES = ["/", "/privacy/", "/terms/"] as const;
+const PAGES = ["/", "/early-access/", "/privacy/", "/terms/"] as const;
 
 const hrefsOn = async (page: Page): Promise<readonly string[]> =>
   page
@@ -54,6 +54,48 @@ test("every internal link returns 200", async ({ page, request }) => {
   for (const target of targets) {
     const response = await request.get(target);
     expect(response.status(), target).toBe(200);
+  }
+});
+
+test("links from the header and footer to pages or to the app, on every page", async ({
+  page,
+  request,
+}) => {
+  for (const path of PAGES) {
+    await page.goto(path);
+    const hrefs = await page
+      .locator("header a[href], footer a[href]")
+      .evaluateAll((anchors) =>
+        anchors.map((anchor) => anchor.getAttribute("href") ?? ""),
+      );
+    expect(hrefs.length, path).toBeGreaterThan(0);
+    for (const href of hrefs) {
+      if (isInternal(href)) {
+        const target = href.split("#")[0] || path;
+        expect((await request.get(target)).status(), `${path}: ${href}`).toBe(
+          200,
+        );
+      } else {
+        const url = new URL(href);
+        expect(url.protocol, `${path}: ${href}`).toBe("https:");
+        expect([...url.searchParams.keys()], href).not.toContain("utm_source");
+      }
+    }
+  }
+});
+
+test("sends the main call to action where the launch mode says", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const toEarlyAccess = page.locator('main a[href="/early-access/"]');
+  const toSignUp = page.locator('main a[href$="/sign-up"]');
+  if (testInfo.project.name === "chromium-open") {
+    await expect(toEarlyAccess).toHaveCount(0);
+    await expect(toSignUp).not.toHaveCount(0);
+  } else {
+    await expect(toEarlyAccess).not.toHaveCount(0);
+    await expect(toSignUp).toHaveCount(0);
   }
 });
 
