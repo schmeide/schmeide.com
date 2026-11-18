@@ -1,6 +1,7 @@
 import { Heading } from "@/components/layout/heading";
 import { Section } from "@/components/layout/section";
 import { ButtonLink } from "@/components/ui/button-link";
+import { CopyText } from "@/components/ui/copy-text";
 import { Highlight } from "@/components/ui/highlight";
 import { RoundedImage } from "@/components/ui/rounded-image";
 import { TextLink } from "@/components/ui/text-link";
@@ -22,7 +23,10 @@ export const Hero = ({ content }: HeroProps) => (
           <Highlight>{content.heading.highlight}</Highlight>
           {content.heading.after}
         </Heading>
-        <p className="mt-7 max-w-lead text-lead text-ink-muted">
+        <p className="mt-7 max-w-lead text-lead font-semibold text-ink">
+          <CopyText copy={content.accountability} />
+        </p>
+        <p className="mt-3 max-w-lead text-lead text-ink-muted">
           {content.lead}
         </p>
         <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3">

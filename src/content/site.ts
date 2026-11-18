@@ -41,7 +41,11 @@ export const site = {
       highlight: "software",
       after: " for it.",
     },
-    lead: "No code, no dev team to hire. We ask good questions, show you designs, and build only what you approve. Then we keep it running for you.",
+    accountability: placeholder(
+      "confirm hosting and upkeep, then use: We build it, host it, and keep it working. You never write a prompt or fix a bug.",
+      "We do the building. You answer our questions in your own words.",
+    ),
+    lead: "For small businesses. We ask good questions, show you designs, and build only what you approve.",
     primaryCta: { label: "Join the early-access list", href: "#early-access" },
     secondaryCta: { label: "How it works", href: "#how" },
     conversation: {
