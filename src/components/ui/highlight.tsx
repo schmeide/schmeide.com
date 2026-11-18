@@ -5,7 +5,7 @@ export type HighlightProps = {
 };
 
 export const Highlight = ({ children }: HighlightProps) => (
-  <span className="rounded-highlight bg-butter box-decoration-clone px-1.5">
+  <span className="inline-block rounded-highlight bg-butter px-1.5 py-1 leading-none">
     {children}
   </span>
 );
