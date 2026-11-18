@@ -153,20 +153,21 @@ export const site = {
         phase: "run",
         title: "It goes live",
         description:
-          "On real servers, watched from day one. You see usage and costs in one dashboard.",
-        ownerDoes: "Open it, use it and share it with your customers.",
-        weDo: "Release it in careful steps and watch how it behaves.",
+          "It runs in the browser, on a phone and on a computer. You try the working copy first, then put it live.",
+        ownerDoes:
+          "Put it live when you are happy, then share it with your customers.",
+        weDo: "Keep a working copy and a live copy, so your customers only see what you put live.",
         isApprovalGate: false,
-        checks: ["Monitoring is on from day one"],
+        checks: [],
       },
       {
         id: "care",
         phase: "run",
         title: "We look after it",
         description:
-          "We keep improving it, and if an update goes wrong, we undo it.",
+          "We keep improving it. Each change goes to the working copy first, and goes live only when you say so.",
         ownerDoes: "Tell us what you want next.",
-        weDo: "Monitor it, update it and undo any update that causes trouble.",
+        weDo: "Make the changes you ask for and check them.",
         isApprovalGate: false,
         checks: ["Every update passes the same checks"],
       },
@@ -175,7 +176,7 @@ export const site = {
 
   whatYouGet: {
     heading: "What you get",
-    lead: "Not only an app. Software that is hosted, watched and looked after.",
+    lead: "Not only an app. Software that is hosted for you, with changes you put live yourself.",
     items: [
       {
         title: "Software made for your business",
@@ -187,15 +188,17 @@ export const site = {
       },
       {
         title: "Someone watching",
-        body: "We monitor your software, so we notice problems instead of waiting for you to report them.",
+        body: placeholder("monitoring, to be confirmed by a founder"),
       },
       {
         title: "Safe updates",
-        body: "Changes go out in careful steps, called rollouts. If one causes trouble, we roll it back: we return to the version that worked.",
+        body: "Changes go to a working copy first. You try them there, and put them live when you are happy.",
       },
       {
         title: "One dashboard",
-        body: "See how much your software is used and what it costs, in one place.",
+        body: placeholder(
+          "one dashboard for usage and cost, to be confirmed by a founder",
+        ),
       },
       {
         title: "Work that continues",
@@ -205,8 +208,9 @@ export const site = {
     preview: {
       usageLabel: "Usage",
       costLabel: "Costs",
-      caption:
-        "An illustration, not real data. Your dashboard shows your own usage and costs.",
+      caption: placeholder(
+        "dashboard illustration, hidden until a founder confirms one dashboard for usage and cost",
+      ),
     },
   },
 
@@ -319,10 +323,12 @@ export const site = {
       },
       {
         question: "What happens if something breaks?",
-        answer: placeholder(
-          "support details",
-          "We monitor it, and we can roll back a bad update.",
-        ),
+        answer: placeholder("support details, monitoring and rollback"),
+      },
+      {
+        question: "What can my software not do yet?",
+        answer:
+          "It runs in the browser, on a phone and on a computer. We do not make apps for the app stores, and it cannot connect to your other tools yet.",
       },
       {
         question: "Is there anything you will not build?",

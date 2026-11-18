@@ -29,7 +29,9 @@ export const WhatYouGet = ({ content }: WhatYouGetProps) => (
           tone="light"
           size="display-2"
         />
-        <DashboardPreview content={content.preview} />
+        {isShown(content.preview.caption) ? (
+          <DashboardPreview content={content.preview} />
+        ) : null}
       </div>
       <ul role="list" className="grid gap-5 sm:grid-cols-2 lg:col-span-7">
         {content.items
